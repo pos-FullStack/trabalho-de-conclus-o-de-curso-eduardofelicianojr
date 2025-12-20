@@ -70,11 +70,11 @@ npm run dev
 
 # ACESSO AO SISTEMA
 
-**Login do Professor**
+**Login do Professor:**
 http://localhost:3000/login
 
-**Área Administrativa**
+**Área Administrativa:**
 http://localhost:3000/admin/dashboard
 
-**Acesso ao Jogo (Aluno)**
+**Acesso ao Jogo (Aluno):**
 http://localhost:3000/jogo
