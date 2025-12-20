@@ -10,20 +10,34 @@ EDUARDO LUIZ FELICIANO JÚNIOR – 2025
 ## Estrutura Inicial do Projeto
 
 src/
+
 ├── config/          # Configurações do banco de dados
+
 ├── controllers/     # Lógica de negócio
+
 ├── models/          # Modelos Sequelize
+
 ├── routes/          # Rotas da aplicação
+
 ├── views/           # Templates Handlebars
+
 ├── public/          # Arquivos estáticos (CSS, JS, imagens)
+
 └── app.js           # Arquivo principal da aplicação
 
+
 **Requisitos**
+
 Antes de iniciar, certifique-se de ter instalado:
+
 Node.js (v18 ou superior)
+
 NPM
+
 MySQL Server (v8.0 ou superior)
+
 MySQL Workbench
+
 Navegador web atualizado
 
 # CLONAR O REPOSITÓRIO
