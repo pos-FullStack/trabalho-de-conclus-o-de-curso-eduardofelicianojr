@@ -1,0 +1,94 @@
+<div class="container mt-4">
+
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>📚 Questões – Figuras de Linguagem</h2>
+
+    <div>
+      <a href="/admin/dashboard" class="btn btn-secondary">
+        🏠 Painel
+      </a>
+
+      <a href="/admin/questoes/nova" class="btn btn-primary">
+        ➕ Nova Questão
+      </a>
+    </div>
+  </div>
+
+  {{#if questoes.length}}
+
+  <div class="table-responsive">
+
+    <table class="table table-hover align-middle shadow-sm">
+
+      <thead class="table-dark">
+        <tr>
+          <th style="width:80px">ID</th>
+          <th>Enunciado</th>
+          <th style="width:150px">Resposta</th>
+          <th style="width:200px" class="text-center">Ações</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        {{#each questoes}}
+        <tr>
+
+          <td class="fw-bold text-muted">
+            #{{id}}
+          </td>
+
+          <td>
+            <div style="max-width:600px">
+              {{enunciado}}
+            </div>
+          </td>
+
+          <td>
+            <span class="badge bg-success fs-6">
+              {{correta}}
+            </span>
+          </td>
+
+          <td class="text-center">
+
+            <a href="/admin/questoes/editar/{{id}}" class="btn btn-sm btn-warning">
+              ✏️ Editar
+            </a>
+
+            <form 
+              action="/admin/questoes/excluir/{{id}}" 
+              method="POST" 
+              style="display:inline;"
+              onsubmit="return confirm('Excluir esta questão?');"
+            >
+
+              <button type="submit" class="btn btn-sm btn-danger">
+                🗑️
+              </button>
+
+            </form>
+
+          </td>
+
+        </tr>
+        {{/each}}
+      </tbody>
+
+    </table>
+
+  </div>
+
+  {{else}}
+
+  <div class="alert alert-info text-center p-4">
+    📭 Nenhuma questão cadastrada ainda.
+    <br><br>
+
+    <a href="/admin/questoes/nova" class="btn btn-primary">
+      ➕ Criar primeira questão
+    </a>
+  </div>
+
+  {{/if}}
+
+</div>

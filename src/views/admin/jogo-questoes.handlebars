@@ -1,0 +1,109 @@
+<div class="container mt-4">
+
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>
+      📝 Questões do Jogo 
+      <span class="badge bg-primary fs-5">{{jogo.pin}}</span>
+    </h2>
+
+    <a href="/admin/jogos" class="btn btn-secondary">
+      🏠 Voltar à Lista de Jogos
+    </a>
+  </div>
+
+  <form id="formQuestaoJogo" action="/admin/jogos/questoes/{{jogo.id}}" method="POST">
+
+    <div class="card shadow-sm">
+
+      <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
+        <span>Selecionar Questões para este Jogo</span>
+        <span class="badge bg-light text-dark">
+          Selecionadas: <span id="contador">0</span>
+        </span>
+      </div>
+
+      <div class="card-body p-0">
+
+        {{#if questoes.length}}
+
+        <div class="list-group list-group-flush">
+
+          {{#each questoes}}
+
+          <label class="list-group-item d-flex align-items-start">
+
+            <input 
+              class="form-check-input me-3 mt-1"
+              type="checkbox"
+              name="questaoIds[]"
+              value="{{id}}"
+              {{#if (includes ../questoesVinculadas id)}}checked{{/if}}
+            >
+
+            <div>
+              <strong>#{{id}}</strong><br>
+              <span>{{enunciado}}</span>
+            </div>
+
+          </label>
+
+          {{/each}}
+
+        </div>
+
+        {{else}}
+
+        <div class="alert alert-info m-3">
+          Nenhuma questão cadastrada ainda.
+        </div>
+
+        {{/if}}
+
+      </div>
+
+    </div>
+
+    <div class="d-flex gap-2 mt-3">
+
+      <button type="submit" class="btn btn-success">
+        💾 Salvar Vínculos
+      </button>
+
+      <a href="/admin/jogos" class="btn btn-secondary">
+        ❌ Cancelar
+      </a>
+
+    </div>
+
+  </form>
+
+</div>
+
+<script>
+const checkboxes = document.querySelectorAll('input[name="questaoIds[]"]');
+const contador = document.getElementById("contador");
+const form = document.getElementById("formQuestaoJogo");
+
+function atualizar() {
+  let total = 0;
+  checkboxes.forEach(c => { if(c.checked) total++; });
+  contador.innerText = total;
+}
+
+// Atualiza ao carregar a página
+atualizar();
+
+// Atualiza a cada mudança
+checkboxes.forEach(c => c.addEventListener("change", atualizar));
+
+// Validação: pelo menos 10 questões selecionadas
+form.addEventListener("submit", function(event) {
+  let selecionadas = 0;
+  checkboxes.forEach(c => { if(c.checked) selecionadas++; });
+
+  if (selecionadas < 10) {
+    event.preventDefault();
+    alert("Você precisa selecionar pelo menos 10 questões para salvar o jogo.");
+  }
+});
+</script>

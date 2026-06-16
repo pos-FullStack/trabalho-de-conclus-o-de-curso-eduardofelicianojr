@@ -1,0 +1,303 @@
+<div class="container-jogo">
+
+    <div class="d-flex align-items-center mb-3">
+        <div class="me-3">
+            <img src="/img/velha.png" alt="Velha" class="img-fluid" style="max-width: 50px;">
+        </div>
+        <div>
+            <h3 class="game-title m-0">Velha da Figura de Linguagem</h3>
+        </div>
+    </div>
+
+    <!-- Cabeçalho -->
+    <div class="header-jogo">
+        <h3>Jogador: {{jogadorNome}} | PIN do Jogo: {{session.jogoPin}}</h3>
+    </div>
+
+    <!-- Controle Música -->
+    <div class="mb-3 text-center">
+        <button id="toggleMusica" class="btn btn-dark">
+            🔊 Música
+        </button>
+    </div>
+
+    <!-- Tabuleiro -->
+    <div id="tabuleiro" class="tabuleiro">
+        {{#each tabuleiroArray}}
+        <button class="casa" data-posicao="{{this}}"></button>
+        {{/each}}
+    </div>
+
+    <!-- Botões -->
+    <div class="botoes-jogo mt-4">
+        <button id="novoJogo" class="btn btn-success">♻️ Novo Jogo</button>
+        <button id="sairJogo" class="btn btn-danger">🚪 Sair</button>
+    </div>
+
+    <!-- Modal da Questão -->
+    <div id="modalQuestao" class="modal-questao">
+        <div class="modal-conteudo">
+            <h3 id="enunciado" class="enunciado-questao"></h3>
+            <div id="alternativas" class="alternativas-container"></div>
+            <button id="fecharModal" class="btn-fechar">Fechar</button>
+        </div>
+    </div>
+
+</div>
+
+<!-- Música -->
+<audio id="musicaFundo" autoplay loop>
+    <source src="/audio/backgroundmusicforvideos-game-music-402451.mp3" type="audio/mpeg">
+</audio>
+
+<!-- SweetAlert -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+    const casas = document.querySelectorAll('.casa');
+    const modal = document.getElementById('modalQuestao');
+    const enunciadoEl = document.getElementById('enunciado');
+    const alternativasEl = document.getElementById('alternativas');
+    const fecharModalBtn = document.getElementById('fecharModal');
+
+    const btnNovoJogo = document.getElementById('novoJogo');
+    const btnSair = document.getElementById('sairJogo');
+
+    const musica = document.getElementById('musicaFundo');
+    const btnMusica = document.getElementById('toggleMusica');
+
+    let tocando = true;
+    let posicaoAtual = null;
+    let tabuleiroEstado = Array(9).fill(null);
+
+    const simbolos = {
+        correto: 'O',
+        incorreto: 'X'
+    };
+
+    const cores = {
+        correto: 'blue',
+        incorreto: 'red'
+    };
+
+    const sequenciasVencedoras = [
+        [0, 1, 2], [3, 4, 5], [6, 7, 8],
+        [0, 3, 6], [1, 4, 7], [2, 5, 8],
+        [0, 4, 8], [2, 4, 6]
+    ];
+
+
+    // ===== MÚSICA =====
+    // Navegadores bloqueiam autoplay.
+    // Precisa iniciar com clique do usuário.
+
+    btnMusica.addEventListener('click', async () => {
+
+        if (!tocando) {
+            try {
+                await musica.play();
+                btnMusica.textContent = '🔊 Música Ligada';
+                tocando = true;
+            } catch (e) {
+                Swal.fire('Não foi possível iniciar o áudio.');
+            }
+
+        } else {
+            musica.pause();
+            btnMusica.textContent = '▶️ Iniciar Música';
+            tocando = false;
+        }
+    });
+
+
+    // Abrir questão
+    async function abrirQuestao(posicao) {
+
+        if (modal.style.display === 'flex') return;
+
+        posicaoAtual = posicao;
+
+        const res = await fetch('/proxima-questao');
+        const data = await res.json();
+
+        enunciadoEl.textContent = data.enunciado;
+        alternativasEl.innerHTML = '';
+
+        for (const letra in data.alternativas) {
+            const btn = document.createElement('button');
+
+            btn.textContent = `${letra}: ${data.alternativas[letra]}`;
+            btn.classList.add('btn-alternativa');
+
+            btn.addEventListener('click', () => {
+                enviarResposta(letra, data.feedback, data.correta);
+            });
+
+            alternativasEl.appendChild(btn);
+        }
+
+        modal.style.display = 'flex';
+    }
+
+
+    // Enviar resposta premium
+    async function enviarResposta(resposta, feedback, correta) {
+
+        if (posicaoAtual === null) return;
+
+        alternativasEl.querySelectorAll('button').forEach(btn => btn.disabled = true);
+
+        const casa = document.querySelector(`.casa[data-posicao='${posicaoAtual}']`);
+
+        let titulo = '';
+        let icon = '';
+        let simbolo = '';
+        let cor = '';
+
+        if (resposta === correta) {
+
+            titulo = '🎯 Resposta Correta!';
+            icon = 'success';
+            simbolo = simbolos.correto;
+            cor = cores.correto;
+
+        } else {
+
+            titulo = '❌ Resposta Incorreta!';
+            icon = 'error';
+            simbolo = simbolos.incorreto;
+            cor = cores.incorreto;
+        }
+
+        casa.textContent = simbolo;
+        casa.style.color = cor;
+
+        tabuleiroEstado[posicaoAtual] = simbolo;
+
+        modal.style.display = 'none';
+
+        await Swal.fire({
+            title: titulo,
+            html: feedback,
+            icon: icon,
+            confirmButtonText: 'Continuar',
+            timer: 3500,
+            timerProgressBar: true
+        });
+
+        posicaoAtual = null;
+
+        verificarResultado();
+    }
+
+
+    // Vitória / derrota / empate
+    function verificarResultado() {
+
+        for (const seq of sequenciasVencedoras) {
+
+            const [a, b, c] = seq;
+
+            if (
+                tabuleiroEstado[a] &&
+                tabuleiroEstado[a] === tabuleiroEstado[b] &&
+                tabuleiroEstado[a] === tabuleiroEstado[c]
+            ) {
+
+                casas.forEach(casa => casa.disabled = true);
+
+                if (tabuleiroEstado[a] === simbolos.correto) {
+
+                    Swal.fire({
+                        title: '🎉 Vitória!',
+                        text: 'Parabéns! Excelente desempenho.',
+                        icon: 'success'
+                    });
+
+                } else {
+
+                    Swal.fire({
+                        title: '💀 Derrota!',
+                        text: 'Jogue novamente!',
+                        icon: 'error'
+                    });
+                }
+
+                return;
+            }
+        }
+
+        if (tabuleiroEstado.every(c => c !== null)) {
+
+            casas.forEach(casa => casa.disabled = true);
+
+            Swal.fire({
+                title: '🤝 Empate!',
+                text: 'Jogo equilibrado.',
+                icon: 'info'
+            });
+        }
+    }
+
+
+    // Fechar modal manual
+    fecharModalBtn.addEventListener('click', () => {
+        modal.style.display = 'none';
+        posicaoAtual = null;
+    });
+
+
+    // Clique casas
+    casas.forEach(casa => {
+        casa.addEventListener('click', () => {
+
+            if (casa.textContent) return;
+
+            abrirQuestao(parseInt(casa.dataset.posicao));
+        });
+    });
+
+
+    // Novo jogo
+    btnNovoJogo.addEventListener('click', async () => {
+
+        const confirma = await Swal.fire({
+            title: 'Reiniciar jogo?',
+            text: 'Todo progresso será perdido.',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Sim',
+            cancelButtonText: 'Cancelar'
+        });
+
+        if (confirma.isConfirmed) {
+
+            tabuleiroEstado.fill(null);
+
+            casas.forEach(c => {
+                c.textContent = '';
+                c.style.color = '';
+                c.disabled = false;
+            });
+
+            Swal.fire('Novo jogo iniciado!', '', 'success');
+        }
+    });
+
+
+    // Sair
+    btnSair.addEventListener('click', async () => {
+
+        const confirma = await Swal.fire({
+            title: 'Deseja sair?',
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonText: 'Sim',
+            cancelButtonText: 'Cancelar'
+        });
+
+        if (confirma.isConfirmed) {
+            window.location.href = '/entrar';
+        }
+    });
+</script>

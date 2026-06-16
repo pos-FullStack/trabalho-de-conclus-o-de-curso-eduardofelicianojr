@@ -1,0 +1,111 @@
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="bi bi-bar-chart-line"></i> Insights Pedagógicos</h2>
+        <a href="/admin/dashboard" class="btn btn-secondary">Voltar</a>
+    </div>
+
+    <div class="card shadow border-0 mb-4">
+        <div class="card-body">
+            <form method="GET" class="row g-3">
+                <div class="col-md-4">
+                    <label>PIN do jogo</label>
+                    <input name="pin" value="{{filtros.pin}}" class="form-control">
+                </div>
+                <!--<div class="col-md-3">
+                    <label>Data</label>
+                    <input type="date" name="data" value="{{filtros.data}}" class="form-control">
+                </div>-->
+                <div class="col-md-6">
+                    <label>Jogador</label>
+                    <input name="jogador" value="{{filtros.jogador}}" class="form-control">
+                </div>
+                <div class="col-md-2 d-grid align-items-end">
+                    <button class="btn btn-primary">Filtrar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="row g-4 mb-4">
+        <div class="col-md-6">
+            <div class="card shadow border-0 p-3"><canvas id="graficoBarras"></canvas></div>
+        </div>
+        <div class="col-md-6">
+            <div class="card shadow border-0 p-3"><canvas id="graficoPizza"></canvas></div>
+        </div>
+    </div>
+
+    <div class="card shadow border-0">
+        <div class="card-body">
+            <table class="table table-hover align-middle">
+                <thead class="table-dark">
+                    <tr>
+                        <th>PIN do jogo</th>
+                        <th>Jogador</th>
+                        <th>Acertos</th>
+                        <th>Erros</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {{#each relatorios}}
+                    <tr>
+                        <td>{{pin}}</td>
+                        <td>{{jogador}}</td>
+                        <td>{{acertos}}</td>
+                        <td>{{erros}}</td>
+                    </tr>
+                    {{/each}}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+
+    const labels = {{{chartLabels}}};
+    const acertos = {{{chartAcertos}}};
+    const erros = {{{chartErros}}};
+
+    new Chart(document.getElementById('graficoBarras'), {
+        type: 'bar',
+        data: {
+            labels: labels,
+            datasets: [
+                {
+                    label: 'Acertos',
+                    data: acertos
+                },
+                {
+                    label: 'Erros',
+                    data: erros
+                }
+            ]
+        },
+        options: {
+            responsive: true
+        }
+    });
+
+    new Chart(document.getElementById('graficoPizza'), {
+        type: 'doughnut',
+        data: {
+            labels: ['Acertos', 'Erros'],
+            datasets: [{
+                data: [
+                    acertos.reduce((a,b)=>a+b,0),
+                    erros.reduce((a,b)=>a+b,0)
+                ]
+            }]
+        },
+        options: {
+            responsive: true
+        }
+    });
+
+});
+</script>

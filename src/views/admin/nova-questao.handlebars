@@ -1,0 +1,114 @@
+<div class="container mt-4">
+
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>✏️ Nova Questão – Figuras de Linguagem</h2>
+
+    <a href="/admin/questoes" class="btn btn-secondary">
+      ⬅ Voltar
+    </a>
+  </div>
+
+  <form action="/admin/questoes/salvar" method="POST">
+
+    <!-- ENUNCIADO -->
+    <div class="card shadow-sm mb-4">
+      <div class="card-body">
+        <label class="form-label fw-bold">📝 Enunciado da Questão</label>
+
+        <textarea
+          name="enunciado"
+          class="form-control"
+          rows="3"
+          placeholder="Digite o enunciado da questão..."
+          required
+        ></textarea>
+      </div>
+    </div>
+
+    <!-- ALTERNATIVAS -->
+    <div class="card shadow-sm mb-4">
+      <div class="card-body">
+
+        <label class="form-label fw-bold mb-3">🔤 Alternativas</label>
+
+        <div class="row g-3">
+
+          <div class="col-md-6">
+            <label class="form-label">Alternativa A</label>
+            <input type="text" name="alternativaA" class="form-control" required>
+          </div>
+
+          <div class="col-md-6">
+            <label class="form-label">Alternativa B</label>
+            <input type="text" name="alternativaB" class="form-control" required>
+          </div>
+
+          <div class="col-md-6">
+            <label class="form-label">Alternativa C</label>
+            <input type="text" name="alternativaC" class="form-control" required>
+          </div>
+
+          <div class="col-md-6">
+            <label class="form-label">Alternativa D</label>
+            <input type="text" name="alternativaD" class="form-control" required>
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+
+    <!-- RESPOSTA CORRETA -->
+    <div class="card shadow-sm mb-4">
+      <div class="card-body">
+
+        <label class="form-label fw-bold">✅ Resposta Correta</label>
+
+        <select name="correta" class="form-select" required>
+          <option value="">Selecione a alternativa correta</option>
+          <option value="A">Alternativa A</option>
+          <option value="B">Alternativa B</option>
+          <option value="C">Alternativa C</option>
+          <option value="D">Alternativa D</option>
+        </select>
+
+      </div>
+    </div>
+
+    <!-- FEEDBACK -->
+    <div class="card shadow-sm mb-4">
+      <div class="card-body">
+
+        <label class="form-label fw-bold">📚 Feedback Pedagógico</label>
+
+        <textarea
+          name="feedback"
+          class="form-control"
+          rows="4"
+          placeholder="Explique por que a alternativa correta está certa..."
+          required
+        ></textarea>
+
+        <div class="form-text">
+          Este texto será mostrado ao aluno após responder a questão.
+        </div>
+
+      </div>
+    </div>
+
+    <!-- BOTÕES -->
+    <div class="d-flex justify-content-between">
+
+      <a href="/admin/questoes" class="btn btn-outline-secondary">
+        Cancelar
+      </a>
+
+      <button type="submit" class="btn btn-success">
+        💾 Salvar Questão
+      </button>
+
+    </div>
+
+  </form>
+
+</div>

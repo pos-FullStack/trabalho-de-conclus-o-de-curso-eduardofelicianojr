@@ -1,0 +1,150 @@
+<div class="container mt-4">
+
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>✏️ Editar Questão</h2>
+
+    <a href="/admin/questoes" class="btn btn-secondary">
+      ⬅ Voltar
+    </a>
+  </div>
+
+  <form action="/admin/questoes/atualizar/{{questao.id}}" method="POST">
+
+    <!-- ENUNCIADO -->
+    <div class="card shadow-sm mb-4">
+      <div class="card-body">
+
+        <label class="form-label fw-bold">📝 Enunciado da Questão</label>
+
+        <textarea
+          name="enunciado"
+          class="form-control"
+          rows="3"
+          required
+        >{{questao.enunciado}}</textarea>
+
+      </div>
+    </div>
+
+    <!-- ALTERNATIVAS -->
+    <div class="card shadow-sm mb-4">
+      <div class="card-body">
+
+        <label class="form-label fw-bold mb-3">🔤 Alternativas</label>
+
+        <div class="row g-3">
+
+          <div class="col-md-6">
+            <label class="form-label">Alternativa A</label>
+            <input
+              type="text"
+              name="alternativaA"
+              class="form-control"
+              value="{{questao.alternativaA}}"
+              required
+            >
+          </div>
+
+          <div class="col-md-6">
+            <label class="form-label">Alternativa B</label>
+            <input
+              type="text"
+              name="alternativaB"
+              class="form-control"
+              value="{{questao.alternativaB}}"
+              required
+            >
+          </div>
+
+          <div class="col-md-6">
+            <label class="form-label">Alternativa C</label>
+            <input
+              type="text"
+              name="alternativaC"
+              class="form-control"
+              value="{{questao.alternativaC}}"
+              required
+            >
+          </div>
+
+          <div class="col-md-6">
+            <label class="form-label">Alternativa D</label>
+            <input
+              type="text"
+              name="alternativaD"
+              class="form-control"
+              value="{{questao.alternativaD}}"
+              required
+            >
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+
+    <!-- RESPOSTA CORRETA -->
+    <div class="card shadow-sm mb-4">
+      <div class="card-body">
+
+        <label class="form-label fw-bold">✅ Resposta Correta</label>
+
+        <select name="correta" class="form-select" required>
+
+          <option value="A" {{#if (eq questao.correta "A")}}selected{{/if}}>
+            Alternativa A
+          </option>
+
+          <option value="B" {{#if (eq questao.correta "B")}}selected{{/if}}>
+            Alternativa B
+          </option>
+
+          <option value="C" {{#if (eq questao.correta "C")}}selected{{/if}}>
+            Alternativa C
+          </option>
+
+          <option value="D" {{#if (eq questao.correta "D")}}selected{{/if}}>
+            Alternativa D
+          </option>
+
+        </select>
+
+      </div>
+    </div>
+
+    <!-- FEEDBACK -->
+    <div class="card shadow-sm mb-4">
+      <div class="card-body">
+
+        <label class="form-label fw-bold">📚 Feedback Pedagógico</label>
+
+        <textarea
+          name="feedback"
+          class="form-control"
+          rows="4"
+          required
+        >{{questao.feedback}}</textarea>
+
+        <div class="form-text">
+          Este feedback será mostrado ao aluno após responder a questão.
+        </div>
+
+      </div>
+    </div>
+
+    <!-- BOTÕES -->
+    <div class="d-flex justify-content-between">
+
+      <a href="/admin/questoes" class="btn btn-outline-secondary">
+        Cancelar
+      </a>
+
+      <button type="submit" class="btn btn-primary">
+        💾 Atualizar Questão
+      </button>
+
+    </div>
+
+  </form>
+
+</div>

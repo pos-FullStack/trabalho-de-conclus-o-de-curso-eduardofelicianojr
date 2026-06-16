@@ -1,0 +1,22 @@
+<div class="container mt-4">
+
+    <h2>Criar Novo Jogo</h2>
+
+    <form action="/admin/jogos/novo" method="POST">
+
+        <div class="mb-3">
+            <label for="status" class="form-label">Status do Jogo</label>
+            <select name="status" id="status" class="form-select">
+                <option value="ativo" selected>Ativo</option>
+                <option value="finalizado">Finalizado</option>
+            </select>
+        </div>
+
+        <button type="submit" class="btn btn-success">
+            💾 Criar Jogo
+        </button>
+
+        <a href="/admin/jogos" class="btn btn-secondary">Cancelar</a>
+    </form>
+
+</div>

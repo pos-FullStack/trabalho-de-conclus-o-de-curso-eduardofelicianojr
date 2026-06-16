@@ -1,0 +1,88 @@
+<div class="container mt-4">
+
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>🎓 Painel do Professor</h2>
+    <a href="/logout" class="btn btn-danger">🚪 Sair</a>
+  </div>
+
+  <p class="mb-4">
+    Bem-vindo, <strong>{{professor.nome}}</strong> 👋
+  </p>
+
+  <div class="row g-4">
+
+    <!-- QUESTÕES -->
+    <div class="col-md-4">
+      <a href="/admin/questoes" class="text-decoration-none">
+        <div class="card shadow border-0 text-center p-4 h-100">
+          <div style="font-size:40px">📚</div>
+          <h5 class="mt-2">Questões</h5>
+          <span class="badge bg-primary fs-6 mt-2">
+            {{questoesCount}}
+          </span>
+        </div>
+      </a>
+    </div>
+
+    <!-- JOGOS -->
+    <div class="col-md-4">
+      <a href="/admin/jogos" class="text-decoration-none">
+        <div class="card shadow border-0 text-center p-4 h-100">
+          <div style="font-size:40px">🎮</div>
+          <h5 class="mt-2">Jogos</h5>
+          <span class="badge bg-success fs-6 mt-2">
+            {{jogosCount}}
+          </span>
+        </div>
+      </a>
+    </div>
+
+    <!-- INSIGHTS PEDAGÓGICOS -->
+    <div class="col-md-4">
+      <a href="/admin/insights" class="text-decoration-none">
+        <div class="card shadow border-0 text-center p-4 h-100">
+          <div style="font-size:40px">👨‍🎓</div>
+          <h5 class="mt-2">Insights Pedagógicos</h5>
+          <span class="badge bg-warning fs-6 mt-2">Relatórios</span>
+        </div>
+      </a>
+    </div>
+
+    <!-- RESPOSTAS 
+    <div class="col-md-3">
+      <div class="card shadow border-0 text-center p-4 h-100">
+        <div style="font-size:40px">📝</div>
+        <h5 class="mt-2">Respostas</h5>
+        <span class="badge bg-info fs-6 mt-2">
+          {{jogadasCount}}
+        </span>
+      </div>
+    </div>-->
+
+  </div>
+
+  <hr class="my-5">
+
+  <div class="row g-4">
+
+    <div class="col-md-6">
+      <a href="/admin/jogos/novo" class="text-decoration-none">
+        <div class="card bg-primary text-white shadow text-center p-4">
+          <h4>➕ Criar Novo Jogo</h4>
+          <p>Gerar PIN para os alunos entrarem</p>
+        </div>
+      </a>
+    </div>
+
+    <div class="col-md-6">
+      <a href="/admin/questoes/nova" class="text-decoration-none">
+        <div class="card bg-success text-white shadow text-center p-4">
+          <h4>✏️ Criar Nova Questão</h4>
+          <p>Adicionar questão de figura de linguagem</p>
+        </div>
+      </a>
+    </div>
+
+  </div>
+
+</div>

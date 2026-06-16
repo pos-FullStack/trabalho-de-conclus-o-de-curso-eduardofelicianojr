@@ -1,0 +1,352 @@
+<div class="container-jogo">
+
+    <div class="d-flex align-items-center mb-3">
+        <div class="me-3">
+            <img src="/img/velha.png" alt="Velha" class="img-fluid" style="max-width: 50px;">
+        </div>
+
+        <div>
+            <h3 class="game-title m-0">Velha da Figura de Linguagem</h3>
+        </div>
+    </div>
+
+    <!-- Cabeçalho -->
+    <div class="header-jogo">
+        <h3>
+            Jogador: {{jogadorNome}} |
+            PIN do Jogo: {{session.jogoPin}}
+        </h3>
+    </div>
+
+    <!-- Música -->
+    <div class="text-center mb-3">
+        <button id="toggleMusica" class="btn btn-dark">
+            ▶️ Iniciar Música
+        </button>
+    </div>
+
+    <!-- Tabuleiro -->
+    <div id="tabuleiro" class="tabuleiro">
+        {{#each tabuleiroArray}}
+        <button class="casa" data-posicao="{{this}}"></button>
+        {{/each}}
+    </div>
+
+    <!-- Botões -->
+    <div class="botoes-jogo mt-4">
+        <button id="novoJogo" class="btn btn-success">♻️ Novo Jogo</button>
+        <button id="sairJogo" class="btn btn-danger">🚪 Sair</button>
+    </div>
+
+    <!-- Modal -->
+    <div id="modalQuestao" class="modal-questao">
+        <div class="modal-conteudo">
+
+            <h3 id="enunciado" class="enunciado-questao" style="color:#111;"></h3>
+
+            <div id="alternativas" class="alternativas-container"></div>
+
+            <p id="feedback" class="feedback-questao"></p>
+
+            <button id="fecharModal" class="btn-fechar">
+                Fechar
+            </button>
+
+        </div>
+    </div>
+
+</div>
+
+<!-- Música -->
+<audio id="musicaFundo" loop preload="auto">
+    <source src="/audio/backgroundmusicforvideos-game-music-402451.mp3" type="audio/mpeg">
+</audio>
+
+<!-- SweetAlert -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+    const casas = document.querySelectorAll('.casa');
+    const modal = document.getElementById('modalQuestao');
+    const enunciadoEl = document.getElementById('enunciado');
+    const alternativasEl = document.getElementById('alternativas');
+    const feedbackEl = document.getElementById('feedback');
+
+    const fecharModalBtn = document.getElementById('fecharModal');
+    const btnNovoJogo = document.getElementById('novoJogo');
+    const btnSair = document.getElementById('sairJogo');
+
+    const musica = document.getElementById('musicaFundo');
+    const btnMusica = document.getElementById('toggleMusica');
+
+    let tocando = false;
+    let posicaoAtual = null;
+    let tabuleiroEstado = Array(9).fill(null);
+
+    const simbolos = {
+        correto: 'O',
+        incorreto: 'X'
+    };
+
+    const cores = {
+        correto: 'blue',
+        incorreto: 'red'
+    };
+
+    const sequenciasVencedoras = [
+        [0, 1, 2], [3, 4, 5], [6, 7, 8],
+        [0, 3, 6], [1, 4, 7], [2, 5, 8],
+        [0, 4, 8], [2, 4, 6]
+    ];
+
+
+    // ====================
+    // MÚSICA
+    // ====================
+    btnMusica.addEventListener('click', async () => {
+
+        if (!tocando) {
+            try {
+                await musica.play();
+                btnMusica.textContent = '🔊 Música Ligada';
+                tocando = true;
+            } catch (e) {
+                Swal.fire('Não foi possível iniciar o áudio.');
+            }
+
+        } else {
+            musica.pause();
+            btnMusica.textContent = '▶️ Iniciar Música';
+            tocando = false;
+        }
+    });
+
+
+    // ====================
+    // ABRIR QUESTÃO
+    // ====================
+    async function abrirQuestao(posicao) {
+
+        if (modal.style.display === 'flex') return;
+
+        posicaoAtual = posicao;
+
+        const res = await fetch('/proxima-questao');
+        const data = await res.json();
+
+        enunciadoEl.textContent = data.enunciado;
+        enunciadoEl.style.color = '#111';
+
+        feedbackEl.textContent = '';
+        alternativasEl.innerHTML = '';
+
+        for (const letra in data.alternativas) {
+
+            const btn = document.createElement('button');
+
+            btn.textContent = `${letra}: ${data.alternativas[letra]}`;
+            btn.classList.add('btn-alternativa');
+
+            btn.addEventListener('click', () => {
+                enviarResposta(letra, data.feedback, data.correta);
+            });
+
+            alternativasEl.appendChild(btn);
+        }
+
+        modal.style.display = 'flex';
+    }
+
+
+    // ====================
+    // ENVIAR RESPOSTA
+    // (mantendo salvamento original)
+    // ====================
+    async function enviarResposta(resposta, feedbackOriginal, corretaOriginal) {
+
+        if (posicaoAtual === null) return;
+
+        alternativasEl.querySelectorAll('button')
+            .forEach(btn => btn.disabled = true);
+
+        try {
+
+            const response = await fetch('/jogada', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    posicao: posicaoAtual,
+                    resposta: resposta
+                })
+            });
+
+            const data = await response.json();
+
+            const casa = document.querySelector(
+                `.casa[data-posicao='${posicaoAtual}']`
+            );
+
+            let titulo = '';
+            let icon = '';
+
+            if (data.correta) {
+
+                casa.textContent = simbolos.correto;
+                casa.style.color = cores.correto;
+
+                tabuleiroEstado[posicaoAtual] = simbolos.correto;
+
+                titulo = '🎯 Resposta Correta!';
+                icon = 'success';
+
+            } else {
+
+                casa.textContent = simbolos.incorreto;
+                casa.style.color = cores.incorreto;
+
+                tabuleiroEstado[posicaoAtual] = simbolos.incorreto;
+
+                titulo = '❌ Resposta Incorreta!';
+                icon = 'error';
+            }
+
+            modal.style.display = 'none';
+
+            await Swal.fire({
+                title: titulo,
+                html: data.feedback,
+                icon: icon,
+                confirmButtonText: 'Continuar',
+                timer: 3500,
+                timerProgressBar: true
+            });
+
+            posicaoAtual = null;
+
+            verificarResultado();
+
+        } catch (erro) {
+
+            console.error(erro);
+
+            Swal.fire({
+                title: 'Erro',
+                text: 'Não foi possível registrar a jogada.',
+                icon: 'error'
+            });
+        }
+    }
+
+
+    // ====================
+    // RESULTADO
+    // ====================
+    function verificarResultado() {
+
+        for (const seq of sequenciasVencedoras) {
+
+            const [a, b, c] = seq;
+
+            if (
+                tabuleiroEstado[a] &&
+                tabuleiroEstado[a] === tabuleiroEstado[b] &&
+                tabuleiroEstado[a] === tabuleiroEstado[c]
+            ) {
+
+                casas.forEach(casa => casa.disabled = true);
+
+                if (tabuleiroEstado[a] === simbolos.correto) {
+
+                    Swal.fire({
+                        title: '🎉 Vitória!',
+                        text: 'Parabéns! Excelente desempenho.',
+                        icon: 'success'
+                    });
+
+                } else {
+
+                    Swal.fire({
+                        title: '💀 Derrota!',
+                        text: 'Jogue novamente!',
+                        icon: 'error'
+                    });
+                }
+
+                return;
+            }
+        }
+
+        if (tabuleiroEstado.every(c => c !== null)) {
+
+            casas.forEach(casa => casa.disabled = true);
+
+            Swal.fire({
+                title: '🤝 Empate!',
+                text: 'Jogo equilibrado.',
+                icon: 'info'
+            });
+        }
+    }
+
+
+    // ====================
+    // EVENTOS
+    // ====================
+
+    fecharModalBtn.addEventListener('click', () => {
+        modal.style.display = 'none';
+        posicaoAtual = null;
+    });
+
+    casas.forEach(casa => {
+
+        casa.addEventListener('click', () => {
+
+            if (casa.textContent) return;
+
+            abrirQuestao(parseInt(casa.dataset.posicao));
+        });
+    });
+
+    btnNovoJogo.addEventListener('click', async () => {
+
+        const confirma = await Swal.fire({
+            title: 'Reiniciar jogo?',
+            text: 'Todo progresso será perdido.',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Sim',
+            cancelButtonText: 'Cancelar'
+        });
+
+        if (confirma.isConfirmed) {
+
+            tabuleiroEstado.fill(null);
+
+            casas.forEach(c => {
+                c.textContent = '';
+                c.style.color = '';
+                c.disabled = false;
+            });
+
+            Swal.fire('♻️ Novo jogo iniciado!', '', 'success');
+        }
+    });
+
+    btnSair.addEventListener('click', async () => {
+
+        const confirma = await Swal.fire({
+            title: 'Deseja sair?',
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonText: 'Sim',
+            cancelButtonText: 'Cancelar'
+        });
+
+        if (confirma.isConfirmed) {
+            window.location.href = '/entrar';
+        }
+    });
+</script>

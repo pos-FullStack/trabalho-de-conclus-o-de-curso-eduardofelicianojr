@@ -1,0 +1,51 @@
+<div class="game-card">
+
+  <div class="text-center mb-3" style="font-size:50px">
+    👨‍🏫
+  </div>
+
+  <h2 class="game-title">
+    Painel do Professor
+  </h2>
+
+  <p class="game-subtitle">
+    Crie salas e conduza o jogo com sua turma
+  </p>
+
+  {{#if erro}}
+  <div class="alert alert-danger text-center">
+    {{erro}}
+  </div>
+  {{/if}}
+
+  <form method="POST" action="/login">
+
+    <div class="mb-3">
+      <label class="form-label">📧 Email</label>
+      <input 
+        type="email" 
+        name="email" 
+        class="form-control"
+        placeholder="professor@email.com"
+        required
+      >
+    </div>
+
+    <div class="mb-4">
+      <label class="form-label">🔒 Senha</label>
+      <input 
+        type="password" 
+        name="senha" 
+        class="form-control"
+        placeholder="Digite sua senha"
+        required
+      >
+    </div>
+
+    <button class="btn btn-success w-100 btn-game">
+      🎮 Entrar no Painel
+    </button>
+
+  </form>
+
+</div>

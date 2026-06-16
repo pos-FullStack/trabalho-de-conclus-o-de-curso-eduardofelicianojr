@@ -1,0 +1,40 @@
+<div class="game-card">
+
+  <div class="d-flex align-items-center mb-3">
+    <div class="me-3">
+      <img src="/img/velha.png" alt="Velha" class="img-fluid" style="max-width: 50px;">
+    </div>
+    <div>
+      <h2 class="game-title m-0">Velha da Figura de Linguagem</h2>
+    </div>
+  </div>
+  <p class="game-subtitle">
+    Aprenda figuras de linguagem jogando!
+  </p>
+
+  {{#if error}}
+  <div class="alert alert-danger text-center">
+    {{error}}
+  </div>
+  {{/if}}
+
+  <form action="/entrar" method="POST">
+
+    <div class="mb-3">
+      <label class="form-label">👤 Seu nome</label>
+      <input type="text" name="nome" class="form-control" placeholder="Digite seu nome" required>
+    </div>
+
+    <div class="mb-4">
+      <label class="form-label">🔢 PIN do jogo</label>
+      <input type="text" name="pin" class="form-control text-center fw-bold fs-4" maxlength="6" placeholder="000000"
+        required>
+    </div>
+
+    <button type="submit" class="btn btn-primary w-100 btn-game">
+      🚀 Entrar no Jogo
+    </button>
+
+  </form>
+
+</div>
